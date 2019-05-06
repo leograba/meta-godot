@@ -32,6 +32,12 @@ RDEPENDS_${PN} = " libpng libogg libtheora libvorbis libvpx libwebp \
         libwebsockets libpcre2 zlib \
         "
 
+# Scons does not pass full include path for freetype, gcc throws the error:
+#  ./scene/resources/dynamic_font.h:41:10: fatal error: ft2build.h: No such file or directory
+#  #include <ft2build.h>
+CFLAGS += " -I${WORKDIR}/recipe-sysroot/usr/include/freetype2 "
+CXXFLAGS += " -I${WORKDIR}/recipe-sysroot/usr/include/freetype2 "
+
 # https://github.com/godotengine/godot/blob/master/SConstruct
 # Godot scons accepts a file with custom build options
 EXTRA_OESCONS += " verbose=1 profile=${S}/oe.py "
