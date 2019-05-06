@@ -38,6 +38,10 @@ RDEPENDS_${PN} = " libpng libogg libtheora libvorbis libvpx libwebp \
 CFLAGS += " -I${WORKDIR}/recipe-sysroot/usr/include/freetype2 "
 CXXFLAGS += " -I${WORKDIR}/recipe-sysroot/usr/include/freetype2 "
 
+# Scons invokes ld instead of g++ for linking, thus -Wl, has to be removed
+#LDFLAGS = "-O1 --hash-style=gnu --as-needed"
+LD = "${HOST_PREFIX}g++ ${TOOLCHAIN_OPTIONS} ${HOST_LD_ARCH}"
+
 # https://github.com/godotengine/godot/blob/master/SConstruct
 # Godot scons accepts a file with custom build options
 EXTRA_OESCONS += " verbose=1 profile=${S}/oe.py "
