@@ -1,0 +1,93 @@
+From b6a42d0dec99d91df98322745eed7196b5b99fef Mon Sep 17 00:00:00 2001
+From: Leonardo Graboski Veiga <leogveiga@gmail.com>
+Date: Fri, 3 May 2019 22:47:45 -0300
+Subject: [PATCH] libvpx: replace `platform.machine()` by `env["arch"] in scons
+ build scripts
+
+Otherwise during cross-compilation it assumes platform is the same as host, instead of the platform
+passed to scons by `platform` variable.
+---
+ SConstruct                 | 4 ++++
+ modules/webm/libvpx/SCsub  | 2 +-
+ platform/android/detect.py | 2 +-
+ platform/haiku/detect.py   | 2 +-
+ platform/x11/detect.py     | 2 +-
+ 5 files changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/SConstruct b/SConstruct
+index 55b061a..392bcba 100644
+--- a/SConstruct
++++ b/SConstruct
+@@ -6,6 +6,7 @@ EnsureSConsVersion(0, 98, 1)
+ import glob
+ import os
+ import string
++import platform
+ import sys
+ 
+ # Local
+@@ -391,6 +392,9 @@ if selected_platform in platform_list:
+ 
+     suffix += env.extra_suffix
+ 
++    if env["arch"] == "":
++        env["arch"] = platform.machine()
++
+     sys.path.remove(tmppath)
+     sys.modules.pop('detect')
+ 
+diff --git a/modules/webm/libvpx/SCsub b/modules/webm/libvpx/SCsub
+index 2639d20..962cd03 100644
+--- a/modules/webm/libvpx/SCsub
++++ b/modules/webm/libvpx/SCsub
+@@ -270,7 +270,7 @@ if env["platform"] == 'uwp':
+         webm_cpu_x86 = True
+ else:
+     import platform
+-    is_x11_or_server_arm = ((env["platform"] == 'x11' or env["platform"] == 'server') and (platform.machine().startswith('arm') or platform.machine().startswith('aarch')))
++    is_x11_or_server_arm = ((env["platform"] == 'x11' or env["platform"] == 'server') and (env["arch"].startswith('arm') or platform.machine().startswith('aarch')))
+     is_ios_x86 = (env["platform"] == 'iphone' and ("arch" in env and env["arch"].startswith('x86')))
+     is_android_x86 = (env["platform"] == 'android' and env["android_arch"].startswith('x86'))
+     if is_android_x86:
+diff --git a/platform/android/detect.py b/platform/android/detect.py
+index 80cda68..8c9cdcf 100644
+--- a/platform/android/detect.py
++++ b/platform/android/detect.py
+@@ -179,7 +179,7 @@ def configure(env):
+     elif (sys.platform.startswith("darwin")):
+         host_subpath = "darwin-x86_64"
+     elif (sys.platform.startswith('win')):
+-        if (platform.machine().endswith('64')):
++        if (env["arch"].endswith('64')):
+             host_subpath = "windows-x86_64"
+         else:
+             mt_link = False
+diff --git a/platform/haiku/detect.py b/platform/haiku/detect.py
+index ae8cc58..3b890c0 100644
+--- a/platform/haiku/detect.py
++++ b/platform/haiku/detect.py
+@@ -125,7 +125,7 @@ def configure(env):
+ 
+     if env['builtin_libtheora']:
+         list_of_x86 = ['x86_64', 'x86', 'i386', 'i586']
+-        if any(platform.machine() in s for s in list_of_x86):
++        if any(env["arch"] in s for s in list_of_x86):
+             env["x86_libtheora_opt_gcc"] = True
+ 
+     if not env['builtin_libwebsockets']:
+diff --git a/platform/x11/detect.py b/platform/x11/detect.py
+index b5ad59e..6ff5889 100644
+--- a/platform/x11/detect.py
++++ b/platform/x11/detect.py
+@@ -221,7 +221,7 @@ def configure(env):
+         env.ParseConfig('pkg-config theora theoradec --cflags --libs')
+     else:
+         list_of_x86 = ['x86_64', 'x86', 'i386', 'i586']
+-        if any(platform.machine() in s for s in list_of_x86):
++        if any(env["arch"] in s for s in list_of_x86):
+             env["x86_libtheora_opt_gcc"] = True
+ 
+     if not env['builtin_libvpx']:
+-- 
+2.7.4
+

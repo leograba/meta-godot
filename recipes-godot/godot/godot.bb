@@ -15,6 +15,7 @@ PV = "3.1+git${SRCPV}"
 SRCREV = "320f49f204cfbf9b480fe62aaa7718afb74920a5"
 SRC_URI = "git://github.com/godotengine/godot \
            file://0001-gdnative-fix-GGC-bug.patch \
+           file://0001-libvpx-replace-platform.machine-by-env-arch-in-scons.patch \
            "
 S = "${WORKDIR}/git"
 
