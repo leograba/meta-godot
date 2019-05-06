@@ -72,3 +72,14 @@ LINKFLAGS = '${LDFLAGS}'" > ${S}/oe.py
 }
 
 inherit scons pkgconfig
+
+# https://docs.godotengine.org/en/latest/development/compiling/compiling_for_x11.html#doc-compiling-for-x11
+# "If all goes well, the resulting binary executable will be placed in the “bin”
+# subdirectory. This executable file contains the whole engine and runs without
+# any dependencies."
+# Therefore we have to override default scons do_install
+scons_do_install(){
+    install -d ${D}${bindir}
+    install -m 0755 ${S}/bin/* ${D}${bindir}/
+    ln -sf ${bindir}/$(ls ${S}/bin) ${D}${bindir}/godot
+}
