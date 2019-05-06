@@ -1,0 +1,29 @@
+From 1a56bf4bb122606b9caa677b6cc736d63590afae Mon Sep 17 00:00:00 2001
+From: Leonardo Graboski Veiga <leogveiga@gmail.com>
+Date: Wed, 1 May 2019 12:45:20 -0300
+Subject: [PATCH] gdnative: fix GGC bug
+
+https://src.fedoraproject.org/rpms/godot/c/8c7b14d9f77a212cb6b44b655c4047a50719f42b?branch=master
+https://src.fedoraproject.org/rpms/godot/blob/master/f/godot-3.0.2-workaround-gcc-ice-armv7hl.patch
+https://github.com/godotengine/godot/issues/16100
+---
+ modules/gdnative/SCsub | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/modules/gdnative/SCsub b/modules/gdnative/SCsub
+index 235f0b9..82c5960 100644
+--- a/modules/gdnative/SCsub
++++ b/modules/gdnative/SCsub
+@@ -29,6 +29,9 @@ _, gensource = env_gdnative.CommandNoCache(['include/gdnative_api_struct.gen.h',
+                                'gdnative_api.json', run_in_subprocess(gdnative_builders.build_gdnative_api_struct))
+ env_gdnative.add_source_files(env.modules_sources, [gensource])
+ 
++# Workaround GCC bug 79085 affecting GCC < 8.1 on armv7hl
++env_gdnative.Append(CCFLAGS="-O3 -fno-tree-fre -fno-tree-dominator-opts -fno-tree-copy-prop -fno-tree-ccp -fno-code-hoisting -fno-tree-pre -fno-tree-vrp".split())
++
+ env.use_ptrcall = True
+ 
+ 
+-- 
+2.7.4
+

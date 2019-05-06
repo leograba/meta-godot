@@ -13,7 +13,9 @@ LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=4af6e265c363b35652a1cecf6cf233ab"
 PV = "3.1+git${SRCPV}"
 
 SRCREV = "320f49f204cfbf9b480fe62aaa7718afb74920a5"
-SRC_URI = "git://github.com/godotengine/godot"
+SRC_URI = "git://github.com/godotengine/godot \
+           file://0001-gdnative-fix-GGC-bug.patch \
+           "
 S = "${WORKDIR}/git"
 
 # Some dependencies are listed at:
